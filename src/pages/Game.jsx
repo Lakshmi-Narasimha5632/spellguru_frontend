@@ -30,17 +30,15 @@ export default function Game() {
 
   /* 🔇 Stop BG music on game page */
   useEffect(() => {
-  stopBgMusic(); // 🔇 Stop music when entering game
+    stopBgMusic();
 
-  return () => {
-    // 🔊 Resume music when leaving game
-    const audio = window.__bgMusic;
-    if (audio) {
-      audio.play().catch(() => {});
-    }
-  };
-}, []);
-
+    return () => {
+      const audio = window.__bgMusic;
+      if (audio) {
+        audio.play().catch(() => {});
+      }
+    };
+  }, []);
 
   /* 🔁 Reset when level changes */
   useEffect(() => {
@@ -88,7 +86,7 @@ export default function Game() {
 
   /* 🔊 Speak */
   const speak = () => {
-    if (!word) return;
+    if (!word || loading) return;
 
     setBeeState("speaking");
 
@@ -104,6 +102,8 @@ export default function Game() {
 
   /* 🎙 Listen */
   const listen = () => {
+    if (loading) return;
+
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return alert("Speech recognition not supported");
 
@@ -137,7 +137,6 @@ export default function Game() {
         const newStars = Math.min(3, stars + 0.125);
         setStars(newStars);
 
-        /* 🏁 Level completed */
         if (nextIndex >= 26) {
           await API.post(
             "/api/progress/update",
@@ -201,8 +200,14 @@ export default function Game() {
   /* 🎮 UI */
   return (
     <div style={styles.page}>
-      <motion.div style={styles.card} initial={{ scale: 0.9 }} animate={{ scale: 1 }}>
-        <h3>Level {level} — {stage.toUpperCase()}</h3>
+      <motion.div
+        style={styles.card}
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+      >
+        <h3>
+          Level {level} — {stage.toUpperCase()}
+        </h3>
 
         <motion.h1
           key={index}
@@ -211,24 +216,46 @@ export default function Game() {
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 200 }}
         >
-          {alphabet[index].toUpperCase()}
+          {alphabet[index]?.toUpperCase()}
         </motion.h1>
 
-        <AnimatedBee state={beeState} />
+        <AnimatedBee state={loading ? "idle" : beeState} />
         <AnimatedStars count={stars} />
 
-        <p>Spell the word that starts with this letter</p>
+        <p>
+          {loading
+            ? "Loading word..."
+            : "Spell the word that starts with this letter"}
+        </p>
 
         <div>
-          <button onClick={speak} style={styles.listen}>🔊 Play Word</button>
-          <button onClick={listen} style={styles.speak}>🎙 Speak</button>
+          <button
+            onClick={speak}
+            style={styles.listen}
+            disabled={loading}
+          >
+            🔊 Play Word
+          </button>
+
+          <button
+            onClick={listen}
+            style={styles.speak}
+            disabled={loading}
+          >
+            🎙 Speak
+          </button>
         </div>
+
+        {loading && <p style={{ color: "#999" }}>⏳ Please wait...</p>}
 
         <h3>{result}</h3>
 
         <div style={styles.progress}>
           {alphabet.map((l, i) => (
-            <span key={i} style={{ color: i < index ? "#FF8A00" : "#ccc" }}>
+            <span
+              key={i}
+              style={{ color: i < index ? "#FF8A00" : "#ccc" }}
+            >
               {l.toUpperCase()}
             </span>
           ))}
