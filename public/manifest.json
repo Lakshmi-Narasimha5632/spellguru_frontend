@@ -1,6 +1,6 @@
 {
-  "name": "SpellBee AI",
-  "short_name": "SpellBee",
+  "name": "SpellGuru",
+  "short_name": "SpellGuru",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#FFF7E6",
