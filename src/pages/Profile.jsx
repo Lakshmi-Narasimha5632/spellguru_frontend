@@ -16,72 +16,65 @@ export default function Profile() {
   const [levelsPlayed, setLevelsPlayed] = useState(0);
 
   /* ===============================
-     LOAD USER INFO
+     LOAD USER + PROFILE PROGRESS
   =============================== */
-  const loadUser = async () => {
-    try {
-      const res = await API.get("/api/auth/me", {
-        headers: {
-          Authorization: "Bearer " + token
-        }
-      });
-
-      setUser(res.data);
-    } catch (err) {
-      console.error("User load failed");
-    }
-  };
-
-  /* ===============================
-     LOAD PROFILE PROGRESS
-  =============================== */
-  const loadProfileProgress = async () => {
-    try {
-      const res = await API.get(
-        "/api/progress/profile",
-        {
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const res = await API.get("/api/auth/me", {
           headers: {
             Authorization: "Bearer " + token
           }
-        }
-      );
+        });
+        setUser(res.data);
+      } catch (err) {
+        console.error("User load failed");
+      }
+    };
 
-      setProgress({
-        easy: res.data.easy,
-        medium: res.data.medium,
-        hard: res.data.hard
-      });
+    const loadProfileProgress = async () => {
+      try {
+        const res = await API.get("/api/progress/profile", {
+          headers: {
+            Authorization: "Bearer " + token
+          }
+        });
 
-      setTotalStars(res.data.totalStars || 0);
-      setLevelsPlayed(res.data.levelsPlayed || 0);
-    } catch (err) {
-      console.error("Progress load error");
-    }
-  };
+        setProgress({
+          easy: res.data.easy,
+          medium: res.data.medium,
+          hard: res.data.hard
+        });
 
-  useEffect(() => {
+        setTotalStars(res.data.totalStars || 0);
+        setLevelsPlayed(res.data.levelsPlayed || 0);
+      } catch (err) {
+        console.error("Progress load error");
+      }
+    };
+
     loadUser();
     loadProfileProgress();
-  }, []);
+  }, [token]);
 
   /* ===============================
      UI CARD
   =============================== */
   const renderStage = (title, data) => {
-    if (!data)
+    if (!data) {
       return (
         <div style={styles.card}>
           Loading...
         </div>
       );
+    }
 
     return (
       <div style={styles.card}>
         <h3>{title}</h3>
 
         <p>
-          🎯 Current Level:{" "}
-          <b>{data.currentLevel}</b>
+          🎯 Current Level: <b>{data.currentLevel}</b>
         </p>
 
         <p>
@@ -98,29 +91,23 @@ export default function Profile() {
 
   return (
     <div style={styles.page}>
-      <h1 style={styles.title}>
-        👤 My Profile
-      </h1>
+      <h1 style={styles.title}>👤 My Profile</h1>
 
       {/* USER CARD */}
       {user && (
         <div style={styles.userCard}>
-          <div style={styles.avatar}>
-            👦
-          </div>
+          <div style={styles.avatar}>👦</div>
 
           <h2>{user.name}</h2>
           <p>{user.email}</p>
 
           <div style={styles.stats}>
             <span>
-              ⭐ Total Stars:{" "}
-              <b>{totalStars}</b>
+              ⭐ Total Stars: <b>{totalStars}</b>
             </span>
 
             <span>
-              🎮 Levels Played:{" "}
-              <b>{levelsPlayed}</b>
+              🎮 Levels Played: <b>{levelsPlayed}</b>
             </span>
           </div>
         </div>
@@ -129,10 +116,7 @@ export default function Profile() {
       {/* STAGE CARDS */}
       <div style={styles.grid}>
         {renderStage("Easy", progress.easy)}
-        {renderStage(
-          "Medium",
-          progress.medium
-        )}
+        {renderStage("Medium", progress.medium)}
         {renderStage("Hard", progress.hard)}
       </div>
     </div>
@@ -162,8 +146,7 @@ const styles = {
     padding: 30,
     borderRadius: 30,
     textAlign: "center",
-    boxShadow:
-      "0 8px 25px rgba(0,0,0,0.15)"
+    boxShadow: "0 8px 25px rgba(0,0,0,0.15)"
   },
 
   avatar: {
@@ -188,8 +171,7 @@ const styles = {
 
   grid: {
     display: "grid",
-    gridTemplateColumns:
-      "repeat(auto-fit, minmax(260px,1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px,1fr))",
     gap: 25
   },
 
@@ -198,7 +180,6 @@ const styles = {
     padding: 25,
     borderRadius: 25,
     textAlign: "center",
-    boxShadow:
-      "0 8px 20px rgba(0,0,0,0.12)"
+    boxShadow: "0 8px 20px rgba(0,0,0,0.12)"
   }
 };
