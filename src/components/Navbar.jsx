@@ -27,7 +27,7 @@ export default function Navbar() {
             nav("/login");
           }}
         >
-          Logout
+          Login
         </button>
       </div>
     </div>
