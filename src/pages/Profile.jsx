@@ -79,7 +79,7 @@ export default function Profile() {
 
         <p>
           🔤 Letters Completed:{" "}
-          <b>{data.letterIndex}/26</b>
+          <b>{Math.min(data.letterIndex, 26)}/26</b>
         </p>
 
         <p>
