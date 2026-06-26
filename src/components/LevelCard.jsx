@@ -49,8 +49,8 @@ export default function LevelCard({
                 duration: 0.4
               }}
               style={{
-                fontSize: 18,
-                margin: "2px",
+                fontSize: 16,
+                margin: "1px",
                 padding:1,
                 color:
                   n <= stars
