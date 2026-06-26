@@ -50,7 +50,8 @@ export default function LevelCard({
               }}
               style={{
                 fontSize: 18,
-                margin: "02px",
+                margin: "2px",
+                padding:15;
                 color:
                   n <= stars
                     ? "#FFD700"
